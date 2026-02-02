@@ -1,0 +1,16 @@
+class Member : public User {
+public:
+    Member(std::string id,
+           std::string name,
+           std::string username,
+           std::string password,
+           std::shared_ptr<NotificationChannel> notifier)
+        : User(std::move(id), std::move(name), std::move(username),
+               std::move(password), std::move(notifier)) {}
+
+    UserRole getRole() const override { return UserRole::MEMBER; }
+
+    int getBorrowLimit(const LibraryRules& rules) const {
+        return rules.getBorrowLimit();
+    }
+};
