@@ -1,0 +1,4 @@
+accounts->addUser(std::make_shared<Member>("M001", "Alice Member", "alice", "pass1", notifier));
+accounts->addUser(std::make_shared<Member>("M002", "Bob Member", "bob", "pass2", notifier));
+accounts->addUser(std::make_shared<Librarian>("L001", "Lina Librarian", "lina", "lib1", notifier));
+accounts->addUser(std::make_shared<Admin>("A001", "Adam Admin", "adam", "admin1", notifier));
