@@ -1,0 +1,53 @@
+// Old code
+#include <iostream>
+using namespace std;
+
+class Car {
+public:
+    virtual void displayInfo() {
+        cout << "[Car] Basic info\n";
+    }
+};
+class ElectricCar : public Car {
+public:
+    void displayInfo() override {
+        cout << "[EletricCar] Basic info\n";
+    }
+};
+
+
+// new class is luxury car
+
+#include <iostream>
+using namespace std;
+
+class Car {
+public:
+    virtual void displayInfo() {
+        cout << "[Car] Basic info\n";
+    }
+};
+class ElectricCar : public Car {
+public:
+    void displayInfo() override {
+        cout << "[EletricCar] Basic info\n";
+    }
+};
+
+class LuxuryCar : public Car {
+private:
+		bool luxuryFeature;
+public:
+    void displayInfo() override {
+        cout << "[LuxuryCar] Basic info\n"<<luxuryFeature;
+
+    }
+     
+};
+
+
+int main()
+{
+    Car* c = new LuxuryCar();
+	c->displayInfo();
+}
