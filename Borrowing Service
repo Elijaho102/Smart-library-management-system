@@ -1,0 +1,76 @@
+class BorrowService {
+public:
+    BorrowService(std::shared_ptr<LibraryCatalog> catalog,
+                  std::shared_ptr<LibraryRules> rules)
+        : catalog(std::move(catalog)), rules(std::move(rules)) {}
+
+    std::string borrowBook(const std::shared_ptr<Member>& member,
+                           const std::string& bookId,
+                           const Date& today) {
+        auto book = catalog->findById(bookId);
+        if (!book) {
+            return "Book not found.";
+        }
+
+        expireReservations(today);
+
+        auto memberReservation = findReservation(book, member);
+        if (book->getStatus() == BookStatus::RESERVED && !memberReservation) {
+            return "Book is reserved by another member.";
+        }
+        if (book->getStatus() == BookStatus::BORROWED) {
+            return "Book is already borrowed.";
+        }
+
+        if (countActiveLoans(member) >= member->getBorrowLimit(*rules)) {
+            return "Borrow limit reached.";
+        }
+
+        Loan loan;
+        loan.book = book;
+        loan.member = member;
+        loan.borrowedDate = today;
+        loan.dueDate = today.addDays(rules->getLoanDays());
+        loans.push_back(loan);
+
+        book->setStatus(BookStatus::BORROWED);
+        if (memberReservation) {
+            removeReservation(memberReservation);
+        }
+
+        member->notify("Borrowed '" + book->getTitle() + "' due " + loan.dueDate.toString() + ".");
+        return "Borrowed successfully.";
+    }
+
+    std::string returnBook(const std::shared_ptr<Member>& member,
+                           const std::string& bookId,
+                           const Date& today) {
+        auto loan = findActiveLoan(bookId, member);
+        if (!loan) {
+            return "Active loan not found.";
+        }
+
+        loan->returned = true;
+        auto book = loan->book;
+
+        auto nextReservation = findEarliestReservation(book);
+        if (nextReservation) {
+            book->setStatus(BookStatus::RESERVED);
+            nextReservation->member->notify(
+                "Reservation available for '" + book->getTitle() + "'."
+            );
+        } else {
+            book->setStatus(BookStatus::AVAILABLE);
+        }
+
+        if (loan->dueDate.isBefore(today)) {
+            int daysLate = loan->dueDate.daysUntil(today);
+            double penalty = daysLate * rules->getLatePenaltyPerDay();
+            member->notify("Returned late. Estimated penalty: " + toString(penalty));
+        }
+
+        return "Return successful.";
+    }
+
+    
+};
