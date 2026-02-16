@@ -1,4 +1,40 @@
-accounts->addUser(std::make_shared<Member>("M001", "Alice Member", "alice", "pass1", notifier));
-accounts->addUser(std::make_shared<Member>("M002", "Bob Member", "bob", "pass2", notifier));
-accounts->addUser(std::make_shared<Librarian>("L001", "Lina Librarian", "lina", "lib1", notifier));
-accounts->addUser(std::make_shared<Admin>("A001", "Adam Admin", "adam", "admin1", notifier));
+class LibrarySystem {
+public:
+    LibrarySystem()
+        : rules(std::make_shared<LibraryRules>()),
+          catalog(std::make_shared<LibraryCatalog>()),
+          accounts(std::make_shared<AccountService>()),
+          borrowService(std::make_shared<BorrowService>(catalog, rules)) {
+        seedData();
+    }
+
+    std::shared_ptr<LibraryRules> getRules() const { return rules; }
+    std::shared_ptr<LibraryCatalog> getCatalog() const { return catalog; }
+    std::shared_ptr<AccountService> getAccounts() const { return accounts; }
+    std::shared_ptr<BorrowService> getBorrowService() const { return borrowService; }
+
+private:
+    void seedData() {
+        auto notifier = std::make_shared<ConsoleNotification>();
+
+        catalog->addBook(std::make_shared<Book>("B001", "Clean Code", "Robert C. Martin"));
+        catalog->addBook(std::make_shared<Book>("B002", "Effective Java", "Joshua Bloch"));
+        catalog->addBook(std::make_shared<Book>("B003", "Design Patterns", "GoF"));
+
+        accounts->addUser(std::make_shared<Member>("M001", "Alice Member", "alice", "pass1", notifier));
+        accounts->addUser(std::make_shared<Member>("M002", "Bob Member", "bob", "pass2", notifier));
+        accounts->addUser(std::make_shared<Librarian>("L001", "Lina Librarian", "lina", "lib1", notifier));
+        accounts->addUser(std::make_shared<Admin>("A001", "Adam Admin", "adam", "admin1", notifier));
+
+        auto alice = std::dynamic_pointer_cast<Member>(
+            accounts->authenticate("alice", "pass1"));
+        if (alice) {
+            borrowService->borrowBook(alice, "B001", Date::today().addDays(-20));
+        }
+    }
+
+    std::shared_ptr<LibraryRules> rules;
+    std::shared_ptr<LibraryCatalog> catalog;
+    std::shared_ptr<AccountService> accounts;
+    std::shared_ptr<BorrowService> borrowService;
+};
