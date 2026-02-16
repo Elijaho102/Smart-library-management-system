@@ -1,8 +1,8 @@
 # SLMS Requirements and Scope
 
 ## Scope
-- Partial Smart Library Management System (SLMS) focused on core member, librarian, and admin workflows.
-- Console-based C++ application with in-memory data (no database or web UI).
+- Partial Smart Library Management System (SLMS) focused on core members, librarian, and admin workflows.
+- Console-based C++ application with in-memory data (no database or web User intertface).
 
 ## Assumptions
 - Users log in with a username/password stored in memory.
@@ -28,7 +28,7 @@
 
 ## Non-Functional Requirements (NFR)
 - NFR1: Actions such as borrowing or reserving complete within 1 second on a
-  typical laptop for the given dataset size.
+  typical laptop or any device for the given dataset size.
 - NFR2: The system uses object-oriented design with clear encapsulation and
   meaningful polymorphism.
 - NFR3: The codebase is readable, well-structured, and uses consistent naming.
@@ -36,7 +36,7 @@
   unavailable books).
 
 ## Constraints
-- C1: Members can borrow up to 3 books at once (default rule).
-- C2: Reservations expire after 3 days if not collected (default rule).
+- C1: Members can borrow up to three books at once (default rule).
+- C2: Reservations expire after three days if not collected (default rule).
 - C3: Loan is up to 14 days Once borrowed (default rule).
 - C4: Book status must be one of Available, Borrowed, or Reserved.
